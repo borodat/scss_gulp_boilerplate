@@ -1,14 +1,15 @@
 var     gulp         = require('gulp'),
         sass         = require('gulp-sass'),
         autoprefixer = require('gulp-autoprefixer'),
-        cleanCSS    = require('gulp-clean-css'),
+        cleanCSS     = require('gulp-clean-css'),
         rename       = require('gulp-rename'),
         browserSync  = require('browser-sync').create(),
         concat       = require('gulp-concat'),
         uglify       = require('gulp-uglify'),
         svgstore     = require('gulp-svgstore'),
         svgmin       = require('gulp-svgmin'),
-        path         = require('path');
+        path         = require('path'),
+        sourcemaps   = require('gulp-sourcemaps');
 
 gulp.task('spritesvg', function () {
   return gulp.src('svg/svgs/*.svg')
@@ -31,12 +32,14 @@ gulp.task('browser-sync', ['styles', 'scripts'], function() {
 
 gulp.task('styles', function () {
     return gulp.src('scss/*.scss')
+    .pipe(sourcemaps.init())
     .pipe(sass({
         includePaths: require('node-bourbon').includePaths
     }).on('error', sass.logError))
     .pipe(rename({suffix: '.min', prefix : ''}))
     .pipe(autoprefixer({browsers: ['last 15 versions'], cascade: false}))
     .pipe(cleanCSS({compatibility: 'ie8'}))
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest('app/css'))
     .pipe(browserSync.stream());
 });
